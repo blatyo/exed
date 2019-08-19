@@ -1,0 +1,15 @@
+[package]
+name = "exed"
+version = "0.1.0"
+authors = []
+
+[lib]
+name = "exed"
+path = "src/lib.rs"
+crate-type = ["dylib"]
+
+[dependencies]
+rustler = { git = "https://github.com/rusterlium/rustler", branch = "master"}
+rustler_codegen = { git = "https://github.com/rusterlium/rustler", branch = "master"}
+erl_nif_sys = { git = "https://github.com/rusterlium/rustler", branch = "master"}
+lazy_static = "1.0"
