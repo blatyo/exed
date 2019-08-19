@@ -1,11 +1,13 @@
-#[macro_use] extern crate rustler;
-#[macro_use] extern crate rustler_codegen;
+#[macro_use]
+extern crate rustler;
+#[macro_use]
+extern crate rustler_codegen;
 //#[macro_use] extern crate lazy_static;
 
-use std::process::Command;
-use std::collections::HashMap;
-use rustler::{Env, Error, Term, Encoder, Decoder, NifResult};
 use rustler::types::MapIterator;
+use rustler::{Decoder, Encoder, Env, Error, NifResult, Term};
+use std::collections::HashMap;
+use std::process::Command;
 
 mod atoms {
     rustler_atoms! {
@@ -25,7 +27,7 @@ impl<'a> Decoder<'a> for Envs {
         match MapIterator::new(term) {
             Some(iter) => {
                 let map: HashMap<String, String> = HashMap::new();
-                let mut envs = Envs{map};
+                let mut envs = Envs { map };
                 for (key_term, value_term) in iter {
                     let key: String = key_term.decode().ok().unwrap();
                     let value: String = value_term.decode().ok().unwrap();
@@ -40,9 +42,13 @@ impl<'a> Decoder<'a> for Envs {
 
 impl Encoder for Envs {
     fn encode<'b>(&self, env: Env<'b>) -> Term<'b> {
-        self.map.iter().fold(Term::map_new(env), |map, (key, value)| {
-            Term::map_put(map, key.encode(env), value.encode(env)).ok().unwrap()
-        })
+        self.map
+            .iter()
+            .fold(Term::map_new(env), |map, (key, value)| {
+                Term::map_put(map, key.encode(env), value.encode(env))
+                    .ok()
+                    .unwrap()
+            })
     }
 }
 
