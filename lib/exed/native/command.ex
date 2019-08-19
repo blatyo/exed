@@ -21,7 +21,11 @@ defmodule Exed.Native.Command do
         flag
 
       {flag, value} ->
-        [flag, value]
+        if String.starts_with?(flag, "--") do
+          flag <> "=" <> value
+        else
+          [flag, value]
+        end
 
       arg ->
         arg

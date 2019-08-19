@@ -11,9 +11,9 @@ defmodule Exed.Command do
   @type args :: list
   @type flag :: atom | String.t()
 
-  @spec new(String.t()) :: t
+  @spec new(String.t() | atom) :: t
   def new(binary) do
-    %__MODULE__{binary: binary}
+    %__MODULE__{binary: to_string(binary)}
   end
 
   def current_dir(%__MODULE__{} = cmd, current_dir)
@@ -37,6 +37,18 @@ defmodule Exed.Command do
     Enum.reduce(envs, cmd, fn {name, value}, cmd ->
       env(cmd, name, value)
     end)
+  end
+
+  @spec flags(t, map | keyword) :: t
+  def flags(%__MODULE__{} = cmd, flags) when is_list(flags) do
+    Enum.reduce(flags, cmd, fn
+      {flag, value}, cmd -> flag(cmd, flag, value)
+      flag, cmd -> flag(cmd, flag)
+    end)
+  end
+
+  def flags(%__MODULE__{} = cmd, %{} = flags) do
+    flags(cmd, Map.to_list(flags))
   end
 
   @spec flag(t, flag) :: t
@@ -70,7 +82,14 @@ defmodule Exed.Command do
     end
   end
 
-  @spec arg(t(), any) :: t()
+  @spec args(t, [term]) :: t
+  def args(cmd, args) when is_list(args) do
+    Enum.reduce(args, cmd, fn arg, cmd ->
+      arg(cmd, arg)
+    end)
+  end
+
+  @spec arg(t, any) :: t()
   def arg(%__MODULE__{} = cmd, arg) do
     raw_arg(cmd, to_string(arg))
   end
